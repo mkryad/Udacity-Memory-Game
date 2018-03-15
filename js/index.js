@@ -1,17 +1,17 @@
-let symbols = ['bicycle', 'bicycle', 'leaf', 'leaf', 'cube', 'cube', 'anchor', 'anchor', 'paper-plane-o', 'paper-plane-o', 'bolt', 'bolt', 'bomb', 'bomb', 'diamond', 'diamond'],
+let symbols = ['code', 'code', 'bug', 'bug', 'user-secret', 'user-secret', 'terminal', 'terminal', 'globe', 'globe', 'laptop', 'laptop', 'server', 'server', 'power-off', 'power-off'],
 	opened = [],
 	match = 0,
-	moves = 0,
-	$deck = $('.deck'),
+	Clicks = 0,
+	$Playground = $('.Playground'),
 	$scorePanel = $('#score-panel'),
-	$moveNum = $('.moves'),
-	$ratingStars = $('.fa-star'),
-	$restart = $('.restart'),
+	$moveNum = $('.Clicks'),
+	$ratingStars = $('.fa-angellist'),
+	$PlayAgain = $('.PlayAgain'),
 	delay = 400,
-	currentTimer,
+	currentseconds,
 	second = 0,
-	$timer = $('.timer'),
-	totalCard = symbols.length / 2,
+	$seconds = $('.seconds'),
+	totalbox = symbols.length / 2,
 	rank3stars = 10,
 	rank2stars = 16,
 	rank1stars = 20;
@@ -32,20 +32,20 @@ function shuffle(array) {
 
 // Initial Game
 function initGame() {
-	var cards = shuffle(symbols);
-	$deck.empty();
+	var boxes = shuffle(symbols);
+	$Playground.empty();
 	match = 0;
-	moves = 0;
+	Clicks = 0;
 	$moveNum.text('0');
-	$ratingStars.removeClass('fa-star-o').addClass('fa-star');
-	for (var i = 0; i < cards.length; i++) {
-		$deck.append($('<li class="card"><i class="fa fa-' + cards[i] + '"></i></li>'))
+	$ratingStars.removeClass('fa-thumbs-down').addClass('fa-star');
+	for (var i = 0; i < boxes.length; i++) {
+		$Playground.append($('<li class="box"><i class="fa fa-' + boxes[i] + '"></i></li>'))
 	}
-	addCardListener();
+	addboxListener();
 
-	resetTimer(currentTimer);
+	resetseconds(currentseconds);
 	second = 0;
-	$timer.text(`${second}`)
+	$seconds.text(`${second}`)
 	initTime();
 };
 
@@ -53,25 +53,26 @@ function initGame() {
 function setRating(moves) {
 	var rating = 3;
 	if (moves > rank3stars && moves < rank2stars) {
-		$ratingStars.eq(2).removeClass('fa-star').addClass('fa-star-o');
+		$ratingStars.eq(2).removeClass('fa-angellist').addClass('fa-thumbs-down');
 		rating = 2;
 	} else if (moves > rank2stars && moves < rank1stars) {
-		$ratingStars.eq(1).removeClass('fa-star').addClass('fa-star-o');
+		$ratingStars.eq(1).removeClass('fa-angellist').addClass('fa-thumbs-down');
 		rating = 1;
 	} else if (moves > rank1stars) {
-		$ratingStars.eq(0).removeClass('fa-star').addClass('fa-star-o');
+		$ratingStars.eq(0).removeClass('fa-angellist').addClass('fa-thumbs-down');
 		rating = 0;
 	}
 	return { score: rating };
 };
 
+
 // End Game
-function endGame(moves, score) {
+function endGame(Clicks, score) {
 	swal({
 		allowEscapeKey: false,
 		allowOutsideClick: false,
 		title: 'Congratulations! You Won!',
-		text: 'With ' + moves + ' Moves and ' + score + ' Stars in ' + second + ' Seconds.\n Woooooo!',
+		text: 'With ' + Clicks + ' Clicks and ' + score + ' Stars in ' + second + ' Seconds.\n Woooooo!',
 		type: 'success',
 		confirmButtonColor: '#02ccba',
 		confirmButtonText: 'Play again!'
@@ -82,18 +83,18 @@ function endGame(moves, score) {
 	})
 }
 
-// Restart Game
-$restart.bind('click', function () {
+// PlayAgain Game
+$PlayAgain.bind('click', function () {
 	swal({
 		allowEscapeKey: false,
 		allowOutsideClick: false,
-		title: 'Restarting Progress',
-		text: "Your progress will be Lost!",
+		title: 'You need to be a surrender',
+		text: "Are you sure Mr. Nope",
 		type: 'warning',
 		showCancelButton: true,
 		confirmButtonColor: '#02ccba',
 		cancelButtonColor: '#f95c3c',
-		confirmButtonText: 'Yes, I dont are !'
+		confirmButtonText: 'Yes, Im nope',
 	}).then(function (isConfirm) {
 		if (isConfirm) {
 			initGame();
@@ -101,47 +102,47 @@ $restart.bind('click', function () {
 	})
 });
 
-var addCardListener = function () {
+var addboxListener = function () {
 
-	// Card flip
-	$deck.find('.card').bind('click', function () {
+	// box flip
+	$Playground.find('.box').bind('click', function () {
 		var $this = $(this)
 
 		if ($this.hasClass('show') || $this.hasClass('match')) { return true; }
 
-		var card = $this.context.innerHTML;
+		var box = $this.context.innerHTML;
 		$this.addClass('open show');
-		opened.push(card);
+		opened.push(box);
 
-		// Compare with opened card
+		// Compare with opened box
 		if (opened.length > 1) {
-			if (card === opened[0]) {
-				$deck.find('.open').addClass('match animated infinite rubberBand');
+			if (box === opened[0]) {
+				$Playground.find('.open').addClass('match animated infinite rubberBand');
 				setTimeout(function () {
-					$deck.find('.match').removeClass('open show animated infinite rubberBand');
+					$Playground.find('.match').removeClass('open show animated infinite rubberBand');
 				}, delay);
 				match++;
 			} else {
-				$deck.find('.open').addClass('notmatch animated infinite wobble');
+				$Playground.find('.open').addClass('notmatch animated infinite wobble');
 				setTimeout(function () {
-					$deck.find('.open').removeClass('animated infinite wobble');
+					$Playground.find('.open').removeClass('animated infinite wobble');
 				}, delay / 1.5);
 				setTimeout(function () {
-					$deck.find('.open').removeClass('open show notmatch animated infinite wobble');
+					$Playground.find('.open').removeClass('open show notmatch animated infinite wobble');
 				}, delay);
 			}
 			opened = [];
-			moves++;
-			setRating(moves);
-			$moveNum.html(moves);
+			Clicks++;
+			setRating(Clicks);
+			$moveNum.html(Clicks);
 		}
 
-		// End Game if match all cards
-		if (totalCard === match) {
-			setRating(moves);
-			var score = setRating(moves).score;
+		// End Game if match all boxes
+		if (totalbox === match) {
+			setRating(Clicks);
+			var score = setRating(Clicks).score;
 			setTimeout(function () {
-				endGame(moves, score);
+				endGame(Clicks, score);
 			}, 500);
 		}
 	});
@@ -149,15 +150,15 @@ var addCardListener = function () {
 
 
 function initTime() {
-	currentTimer = setInterval(function () {
-		$timer.text(`${second}`)
+	currentseconds = setInterval(function () {
+		$seconds.text(`${second}`)
 		second = second + 1
 	}, 1000);
 }
 
-function resetTimer(timer) {
-	if (timer) {
-		clearInterval(timer);
+function resetseconds(seconds) {
+	if (seconds) {
+		clearInterval(seconds);
 	}
 }
 
